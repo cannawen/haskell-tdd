@@ -20,6 +20,18 @@ parse grid =
     (zip [0..] row)) 
   (zip [0..] grid)
 
+allPaths :: [[Point]] -> [[Point]]
+allPaths grid = go (grid !! 0 !! 0)
+  where
+    lastRow = length grid - 1
+    lastCol = length (head grid) - 1
+    go point@(x,y,_)
+      | x == lastRow && y == lastCol = [[point]]
+      | otherwise = do
+        next <- nextPoints grid point
+        path <- go next
+        return (point : path)
+
 nextPoints :: [[Point]] -> Point -> [Point]
 nextPoints grid (px, py, pcost) =
   catMaybes 
