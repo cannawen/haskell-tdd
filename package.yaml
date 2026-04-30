@@ -12,7 +12,7 @@ library:
 executables:
   haskell-tdd-exe:
     main:                Main.hs
-    source-dirs:         src
+    source-dirs:         app
     dependencies:
       - haskell-tdd
 
