@@ -6,4 +6,4 @@ import MaxPath3742 (maxPath)
 spec :: Spec
 spec = do 
   it "retuns" $
-    maxPath 1 1 `shouldBe` 2
+    maxPath [[1]] 0 `shouldBe` -1

@@ -5,13 +5,15 @@ A minimal Haskell project set up for test-driven development using [Stack](https
 ## Prerequisites
 
 - [Stack](https://docs.haskellstack.org/en/stable/install_and_upgrade/) — Haskell build tool and package manager
+- hpack
 
 ## Project structure
 
 ```
-src/
-  Lib.hs      # Library functions (add, multiply)
+app/
   Main.hs     # Executable entry point
+src/
+  MiscFiles.hs
 test/
   Spec.hs     # Test suite
 ```
@@ -26,6 +28,11 @@ stack build
 **Run the executable**
 ```sh
 stack run
+```
+
+**Run in REPL**
+```sh
+stack ghci src/File.hs
 ```
 
 **Run tests**
