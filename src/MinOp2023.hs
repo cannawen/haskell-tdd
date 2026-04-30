@@ -1,11 +1,11 @@
 module MinOp2023
-  (main
+  (minOp
   ) where
 import Data.Function
 import Data.List
 
-main :: [[Int]] -> Int -> Int
-main grid step = minOperations array step
+minOp :: [[Int]] -> Int -> Int
+minOp grid step = minOperations array step
   where
     array = grid & concat & sort
 
