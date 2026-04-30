@@ -28,4 +28,4 @@ main = hspec $ do
       describe "one step away" $ do
         it "returns 1" $ do
           minOperations2033 [[4,2]] 2 `shouldBe` 1
-          minOperations2033 [[5,3]] 2 `shouldBe` 1
+          minOperations2033 [[3,5]] 2 `shouldBe` 1
