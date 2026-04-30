@@ -1,6 +1,6 @@
 cabal-version:       2.2
 
-name:                myproject
+name:                haskell-tdd
 version:             0.1.0.0
 license:             BSD-3-Clause
 license-file:        LICENSE
@@ -18,7 +18,7 @@ library
   build-depends:       base >= 4.7 && < 5
   ghc-options:         -Wall
 
-executable myproject
+executable haskell-tdd
   hs-source-dirs:      src
   main-is:             Main.hs
   other-modules:       Lib
@@ -26,15 +26,16 @@ executable myproject
   build-depends:       base >= 4.7 && < 5
   ghc-options:         -Wall
 
-test-suite myproject-test
+test-suite haskell-tdd-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
   default-language:    Haskell2010
   build-depends:       base >= 4.7 && < 5
-                     , myproject
+                     , haskell-tdd
+                     , hspec ^>=2.11.17
   ghc-options:         -Wall
 
 source-repository head
   type:     git
-  location: https://github.com/githubuser/myproject
+  location: https://github.com/githubuser/haskell-tdd

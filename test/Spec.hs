@@ -1,21 +1,22 @@
 module Main (main) where
 
+import Test.Hspec
 import Lib (add, multiply)
 
 main :: IO ()
-main = do
-  -- add tests
-  assert "1 + 1 = 2"   (add 1 1 == 2)
-  assert "0 + 5 = 5"   (add 0 5 == 5)
-  assert "(-3) + 3 = 0" (add (-3) 3 == 0)
+main = hspec $ do
+  describe "add" $ do
+    it "adds two positive numbers" $
+      add 1 1 `shouldBe` 2
+    it "handles zero" $
+      add 0 5 `shouldBe` 5
+    it "handles negative numbers" $
+      add (-3) 3 `shouldBe` 0
 
-  -- multiply tests
-  assert "2 * 3 = 6"   (multiply 2 3 == 6)
-  assert "0 * 9 = 0"   (multiply 0 9 == 0)
-  assert "(-2) * 4 = -8" (multiply (-2) 4 == -8)
-
-  putStrLn "All tests passed!"
-
-assert :: String -> Bool -> IO ()
-assert name True  = putStrLn $ "PASS: " ++ name
-assert name False = error  $ "FAIL: " ++ name
+  describe "multiply" $ do
+    it "multiplies two numbers" $
+      multiply 2 3 `shouldBe` 6
+    it "multiplies by zero" $
+      multiply 0 9 `shouldBe` 0
+    it "handles negative numbers" $
+      multiply (-2) 4 `shouldBe` (-8)
