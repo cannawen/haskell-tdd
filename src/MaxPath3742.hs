@@ -1,5 +1,7 @@
 module MaxPath3742 
   (maxPath) where
+import Data.Maybe (catMaybes)
+import Data.Function
 
 type Row = Int
 type Column = Int
@@ -18,10 +20,10 @@ parse grid =
     (zip [0..] row)) 
   (zip [0..] grid)
 
-nextPoints :: [[Point]] -> Point -> [Maybe Point]
-nextPoints grid (px, py, pcost) = 
-  [getPointInGrid grid (px+1) py,
-   getPointInGrid grid px (py+1)]
+nextPoints :: [[Point]] -> Point -> [Point]
+nextPoints grid (px, py, pcost) =
+  catMaybes 
+  [getPointInGrid grid (px+1) py, getPointInGrid grid px (py+1)]
 
 getPointInGrid :: [[Point]] -> Row -> Column -> Maybe Point
 getPointInGrid grid x y = 
