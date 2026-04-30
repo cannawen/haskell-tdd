@@ -14,15 +14,12 @@ minOperations [_] _ = 0
 minOperations [] _ = -1
 minOperations _ 0 = -1
 minOperations xs step =
-  if allSame (map snd dm)
-    then foldl1' (+) (map fst dm)
+  if allSame (map snd divModResult)
+    then foldl1' (+) (map fst divModResult)
     else (-1)
   where
-    med = median xs
-    dm = map (\x -> abs (x - med) `divMod` step ) xs
-
-median :: [Int] -> Int
-median array = array !! ((length array) `div` 2)
+    med = xs !! ((length xs) `div` 2)
+    divModResult = map (\x -> abs (x - med) `divMod` step ) xs
 
 allSame :: (Eq a) => [a] -> Bool
 allSame [] = True
