@@ -1,6 +1,6 @@
 cradle:
   stack:
     - path: "./src"
-      component: "haskell-tdd:lib"
+      component: "haskell-tdd"
     - path: "./test"
       component: "haskell-tdd:test:haskell-tdd-test"

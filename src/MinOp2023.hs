@@ -1,11 +1,11 @@
-module Lib
-  (minOperations2033
+module MinOp2023
+  (main
   ) where
 import Data.Function
 import Data.List
 
-minOperations2033 :: [[Int]] -> Int -> Int
-minOperations2033 grid step = minOperations array step
+main :: [[Int]] -> Int -> Int
+main grid step = minOperations array step
   where
     array = grid & concat & sort
 
