@@ -1,0 +1,26 @@
+name:                haskell-tdd
+version:             0.1.0.0
+
+# Dependencies listed here apply to everything (library, executables, tests)
+dependencies:
+  - base >= 4.7 && < 5
+
+library:
+  source-dirs: src
+  # hpack automatically finds all .hs files in src/ and exposes them!
+
+executables:
+  haskell-tdd-exe:
+    main:                Main.hs
+    source-dirs:         src
+    dependencies:
+      - haskell-tdd
+
+tests:
+  haskell-tdd-test:
+    main:                Spec.hs
+    source-dirs:         test
+    dependencies:
+      - hspec
+      - haskell-tdd
+      - hspec-discover
