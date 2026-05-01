@@ -20,10 +20,12 @@ type Grid = Array Coord Score
 maxScore grid = listToArray grid
 
 constructAllPossibleFills :: Grid -> [[Coord]]
-constructAllPossibleFills grid = [generate col colHeight | col <- [0..yMax], colHeight <- [0..xMax]]
-    where 
+constructAllPossibleFills grid =
+    map concat (sequence allColFills)
+    where
         (_, (xMax, yMax)) = bounds grid
-        generate y height = [(x, y) | x <- [0..height]]
+        allColFills = [colFills col | col <- [0..yMax]]
+        colFills col = [[(x, col) | x <- [0..height]] | height <- [-1..xMax]]
 
 scoreGrid :: Grid -> [Coord] -> Int
 scoreGrid grid blackSpaces = 
