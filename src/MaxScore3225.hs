@@ -39,7 +39,7 @@ scoreGrid grid blackSpaces =
         (_, (xMax, yMax)) = bounds grid
         scoreIndex :: Grid -> [Coord] -> Row -> Column -> Score
         scoreIndex grid blackSpaces x y = 
-            if elem (x, y-1) blackSpaces || elem (x, y+1) blackSpaces
+            if not (elem (x, y) blackSpaces) && ( elem (x, y-1) blackSpaces || elem (x, y+1) blackSpaces)
                 then grid ! (x , y)
                 else 0
 
