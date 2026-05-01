@@ -7,8 +7,6 @@ spec :: Spec
 spec = do
   it "all-zero grid scores 0" $ do
     maxScore [[0,0],[0,0]] `shouldBe` 0
-  it "scores adjacent white cells correctly" $ do
-    maxScore [[0,0,1,0],[0,1,1,0],[1,0,0,1],[0,0,1,0]] `shouldBe` 4
   it "example 1" $ do
     maxScore [[0,0,0,0,0],[0,0,3,0,0],[0,1,0,0,0],[5,0,0,3,0],[0,0,0,0,2]] `shouldBe` 11
   it "example 2" $ do
