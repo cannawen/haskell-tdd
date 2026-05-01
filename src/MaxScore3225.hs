@@ -19,17 +19,17 @@ type Grid = Array Coord Score
 -- maxScore :: [[Int]] -> Int
 maxScore grid = listToArray grid
 
-scoreFor :: Grid -> [Coord] -> Row -> Column -> Score
-scoreFor grid blackSpaces x y = 
-    if elem (x, y-1) blackSpaces || elem (x, y+1) blackSpaces
-        then grid ! (x , y)
-        else 0
-
 scoreGrid :: Grid -> [Coord] -> Int
 scoreGrid grid blackSpaces = 
-    [scoreFor grid blackSpaces x y | x <- [0..xMax], y <- [0..yMax]]
+    [scoreIndex grid blackSpaces x y | x <- [0..xMax], y <- [0..yMax]]
     & foldl1' (+)
-    where (_, (xMax, yMax)) = bounds grid
+    where 
+        (_, (xMax, yMax)) = bounds grid
+        scoreIndex :: Grid -> [Coord] -> Row -> Column -> Score
+        scoreIndex grid blackSpaces x y = 
+            if elem (x, y-1) blackSpaces || elem (x, y+1) blackSpaces
+                then grid ! (x , y)
+                else 0
 
 getColScore :: Grid -> Row -> Column -> Score
 getColScore grid row col = 
