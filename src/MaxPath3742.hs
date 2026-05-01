@@ -4,6 +4,7 @@ module MaxPath3742
 import Data.Array
 import Data.Function
 import Data.List
+import Lib
 
 type Row = Int
 type Column = Int
@@ -21,18 +22,12 @@ pathScores = foldl' updateFn (0, 0)
 maxPath :: [[Int]] -> Int -> Int
 maxPath rawGrid maxCost = if not (null p) then maximum p else -1
   where
-    grid = parse rawGrid
+    grid = listToArray rawGrid
     p = allPaths grid
       & map (map (grid !))
       & map pathScores
       & filter (\(_, cost) -> cost <= maxCost)
       & map fst
-
-parse :: [[Int]] -> Grid
-parse rawGrid = listArray ((0, 0), (lastRow, lastCol)) (concat rawGrid)
-  where
-    lastRow = length rawGrid - 1
-    lastCol = length (head rawGrid) - 1
 
 allPaths :: Grid -> [[Coord]]
 allPaths grid = go (lastRow, lastCol)
