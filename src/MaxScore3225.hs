@@ -1,7 +1,8 @@
 module MaxScore3225 
     ( maxScore
     , getScoreAt
-    , getColScore) where
+    , getColScore
+    , scoreGrid) where
 
 import Lib
 import Data.Array
@@ -17,6 +18,9 @@ type Grid = Array Coord Cost
 
 -- maxScore :: [[Int]] -> Int
 maxScore grid = listToArray grid
+
+scoreGrid :: Grid -> [Coord] -> Int
+scoreGrid grid blackSpaces = 0
 
 getColScore :: Grid -> Row -> Column -> Cost
 getColScore grid row col = 

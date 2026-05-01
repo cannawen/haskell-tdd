@@ -2,7 +2,7 @@ module MaxScoreSpec (spec) where
 
 import Test.Hspec
 import Lib (listToArray)
-import MaxScore3225 (maxScore, getScoreAt, getColScore)
+import MaxScore3225 (maxScore, getScoreAt, getColScore, scoreGrid)
 
 exampleArray = listToArray [[1,2,3],[4,5,6]]
 
@@ -24,3 +24,11 @@ spec = do
     it "should sum up left and right scores" $ do
       getColScore exampleArray 0 1 `shouldBe` 2
       getColScore exampleArray 1 1 `shouldBe` 7
+  describe "scoring entire grid" $ do
+    it "should count scores beside black spaces" $ do 
+      scoreGrid exampleArray [] `shouldBe` 0
+      scoreGrid exampleArray [(0,0)] `shouldBe` 2
+      scoreGrid exampleArray [(0,0),(1,0)] `shouldBe` 7
+      scoreGrid exampleArray [(0,0),(1,0),(0,2),(1,2)] `shouldBe` 7
+      scoreGrid exampleArray [(0,1)] `shouldBe` 4
+      scoreGrid exampleArray [(0,1),(1,1)] `shouldBe` 14
