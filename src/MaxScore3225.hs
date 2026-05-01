@@ -18,8 +18,9 @@ type Grid = Array Coord Cost
 -- maxScore :: [[Int]] -> Int
 maxScore grid = listToArray grid
 
+getColScore :: Grid -> Row -> Column -> Cost
 getColScore grid row col = 
-    [getScoreAt grid x y | x <- [0..row], y <- [col+1, col-1]]
+    [getScoreAt grid x col | x <- [0..row]]
     & foldl1' (+)
 
 getScoreAt :: Grid -> Row -> Column -> Cost

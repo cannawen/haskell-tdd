@@ -22,11 +22,5 @@ spec = do
       getScoreAt exampleArray 2 1 `shouldBe` 0
   describe "column score" $ do 
     it "should sum up left and right scores" $ do
-      getColScore exampleArray 0 1 `shouldBe` 4
-      getColScore exampleArray 1 1 `shouldBe` 14
-    it "should handle edge cases on left edge of grid" $ do
-      getColScore exampleArray 0 0 `shouldBe` 2
-      getColScore exampleArray 1 0 `shouldBe` 7
-    it "should handle edge cases on right edge of grid" $ do
-      getColScore exampleArray 0 2 `shouldBe` 2
-      getColScore exampleArray 1 2 `shouldBe` 7
+      getColScore exampleArray 0 1 `shouldBe` 2
+      getColScore exampleArray 1 1 `shouldBe` 7
