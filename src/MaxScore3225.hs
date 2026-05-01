@@ -12,22 +12,31 @@ import Data.List
 
 type Row = Int
 type Column = Int
-type Cost = Int
+type Score = Int
 type Coord = (Row, Column)
-type Grid = Array Coord Cost
+type Grid = Array Coord Score
 
 -- maxScore :: [[Int]] -> Int
 maxScore grid = listToArray grid
 
-scoreGrid :: Grid -> [Coord] -> Int
-scoreGrid grid blackSpaces = 0
+scoreFor :: Grid -> [Coord] -> Row -> Column -> Score
+scoreFor grid blackSpaces x y = 
+    if elem (x, y-1) blackSpaces || elem (x, y+1) blackSpaces
+        then grid ! (x , y)
+        else 0
 
-getColScore :: Grid -> Row -> Column -> Cost
+scoreGrid :: Grid -> [Coord] -> Int
+scoreGrid grid blackSpaces = 
+    [scoreFor grid blackSpaces x y | x <- [0..xMax], y <- [0..yMax]]
+    & foldl1' (+)
+    where (_, (xMax, yMax)) = bounds grid
+
+getColScore :: Grid -> Row -> Column -> Score
 getColScore grid row col = 
     [getScoreAt grid x col | x <- [0..row]]
     & foldl1' (+)
 
-getScoreAt :: Grid -> Row -> Column -> Cost
+getScoreAt :: Grid -> Row -> Column -> Score
 getScoreAt grid row col = 
     if row >= 0 && col >= 0 && row <= xMax && col <= yMax
         then grid ! (row, col)
