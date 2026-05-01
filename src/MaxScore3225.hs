@@ -16,7 +16,7 @@ type Score = Int
 type Coord = (Row, Column)
 type Grid = Array Coord Score
 
--- maxScore :: [[Int]] -> Int
+maxScore :: [[Score]] -> Int
 maxScore rawGrid = grid
     & constructAllPossibleFills
     & map (scoreGrid grid)
