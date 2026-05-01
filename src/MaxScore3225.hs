@@ -19,6 +19,12 @@ type Grid = Array Coord Score
 -- maxScore :: [[Int]] -> Int
 maxScore grid = listToArray grid
 
+constructAllPossibleFills :: Grid -> [[Coord]]
+constructAllPossibleFills grid = [generate col colHeight | col <- [0..yMax], colHeight <- [0..xMax]]
+    where 
+        (_, (xMax, yMax)) = bounds grid
+        generate y height = [(x, y) | x <- [0..height]]
+
 scoreGrid :: Grid -> [Coord] -> Int
 scoreGrid grid blackSpaces = 
     [scoreIndex grid blackSpaces x y | x <- [0..xMax], y <- [0..yMax]]
