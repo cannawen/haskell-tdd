@@ -17,7 +17,11 @@ type Coord = (Row, Column)
 type Grid = Array Coord Score
 
 -- maxScore :: [[Int]] -> Int
-maxScore grid = listToArray grid
+maxScore rawGrid = grid
+    & constructAllPossibleFills
+    & map (scoreGrid grid)
+    & maximum
+    where grid = listToArray rawGrid
 
 constructAllPossibleFills :: Grid -> [[Coord]]
 constructAllPossibleFills grid =
