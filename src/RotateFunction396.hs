@@ -1,4 +1,5 @@
 module RotateFunction396 () where
+import Lib 
 import Data.Function
 import Data.List
 
@@ -8,9 +9,6 @@ rotate arr =
     & map calculateProductSum 
     & maximum
     
-    where
-        rotateBy :: Int -> [a] -> [a]
-        rotateBy n arr = drop n arr ++ take n arr
-        
+    where        
         calculateProductSum :: [(Int,Int)] -> Int
         calculateProductSum arr = map (\(i,n) -> i * n ) arr & foldl1' (+)
