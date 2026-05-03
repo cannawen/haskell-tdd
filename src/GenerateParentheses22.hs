@@ -29,7 +29,6 @@ generateT' n = do
             rest <- generateT' n
             return (')':rest)
 
-
 generateL :: ParensCount -> [String]
 generateL n = generateL' n 0 0
 
@@ -61,3 +60,20 @@ generateLC' n open close
         ['(' : rest | open < n, rest <- generateLC' n (open+1) close]
         ++ 
         [')' : rest | close < open, rest <- generateLC' n open (close+1)]
+
+
+generateCanna n = generateCanna' n 0 0
+
+generateCanna' :: ParensCount -> OpenCount -> ClosedCount -> [String]
+generateCanna' n open close
+    | n == open && n == close = [""]
+    | otherwise = addOpen <|> addClose
+    where
+        addOpen = do
+            guard (n < open)
+            rest <- generateCanna' n (open+1) close
+            return ('(':rest)
+        addClose = do
+            guard (close < open)
+            rest <- generateCanna' n open (close+1)
+            return (')':rest)
