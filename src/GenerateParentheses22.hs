@@ -4,13 +4,14 @@ import Control.Applicative
 import Control.Monad
 import Control.Monad.State
 
+type ParensCount = Int
 type OpenCount = Int
 type ClosedCount = Int
 
-generate :: Int -> [String]
+generate :: ParensCount -> [String]
 generate n = evalStateT (generateT n) (0, 0)
 
-generateT :: Int -> StateT (OpenCount, ClosedCount) [] String
+generateT :: ParensCount -> StateT (OpenCount, ClosedCount) [] String
 generateT n = do 
     (open, close) <- get
     if open == n && close == n 
@@ -26,4 +27,18 @@ generateT n = do
             guard (close < open)
             put (open, close + 1)
             rest <- generateT n
+            return (')':rest)
+
+generateL :: ParensCount -> OpenCount -> ClosedCount -> [String]
+generateL n open close
+    | open == n && close == n = return ""
+    | otherwise = addOpen <|> addClose
+    where
+        addOpen = do
+            guard (open < n)
+            rest <- generateL n (open + 1) close
+            return ('(':rest)
+        addClose = do
+            guard (close < open)
+            rest <- generateL n open (close + 1)
             return (')':rest)
