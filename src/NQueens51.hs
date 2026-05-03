@@ -18,17 +18,17 @@ instance Show Cell where
 type Board =  [[Cell]]
 
 -- calculateNQueens :: Int -> Int
-calculateNQueens n = calculateNQueens' (n-1) (createGrid (n-1))
+calculateNQueens n = calculateNQueens' (n-1) (createGrid (n-1)) & length
 
 calculateNQueens' :: Int -> Board -> [Board]
-calculateNQueens' n board = 
-    if boardFull board && countQueens board == n + 1
+calculateNQueens' n board =
+    if countQueens board == n + 1
         then [board]
         else concatMap (\board -> calculateNQueens' n board) possibleFutures
-    where 
-        openCells = [(x,y) | x <- [0..n], y <- [0..n], board !! x !! y == Valid]
+    where
+        nextRow = countQueens board
+        openCells = [(nextRow, y) | y <- [0..n], board !! nextRow !! y == Valid]
         possibleFutures = map (\(x,y) -> addQueen n x y board) openCells
-        boardFull board = not $ any (== Valid) (concat board)
 
 countQueens board = filter (\c -> c == Queen) (concat board) & length
 
