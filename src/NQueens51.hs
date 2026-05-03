@@ -44,4 +44,14 @@ addQueen n x y board = [[newCell r c | c <- [0..n]] | r <- [0..n]]
 createGrid :: Int -> Board
 createGrid n = [[Valid | x <- [0..n]] | y <- [0..n]]
 
+-------------------------------------------------------------------------------
 
+calc :: Int -> Int
+calc n = calc' (permutations [0..n-1])
+
+calc' :: [[Int]] -> Int
+calc' configurations = filter isValid configurations & length
+
+isValid :: [Int] -> Bool
+isValid configuration = False -- TODO
+  where qCoords = zip [0..] configuration
