@@ -1,4 +1,4 @@
-module Rotate396 () where
+module RotateFunction396 () where
 import Data.Function
 import Data.List
 
