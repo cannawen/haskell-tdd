@@ -7,6 +7,7 @@ import Data.Function
 import Data.List
 import Lib
 import Control.Applicative (Alternative(empty))
+import Control.Monad
 
 type Row = Int
 type Column = Int
@@ -61,6 +62,9 @@ calc' n possibleBoards = filter (isValid n) possibleBoards & length
 isValid :: BoardSize -> [QueenCoordinate] -> Bool
 isValid n board = and $ map (\coord -> map (isValidInDir n board coord) deltas & and) board
 
+isValid' :: BoardSize -> QueenCoordinate -> [QueenCoordinate] -> Bool
+isValid' n potentialQueen board = map (isValidInDir n board potentialQueen) deltas & and
+
 deltas :: [(Row, Column)]
 deltas = [(dx, dy) | dx <- [-1, 0, 1], dy <- [-1, 0, 1], (dx, dy) /= (0, 0)]
 
@@ -101,3 +105,26 @@ nQueens' n =
         boards
         & filter (not . null)
     ) [[]] [0..n-1]
+
+-------------------------------------------------------------------------------
+
+nQueens'' n = foldl' expand [[]] [0..n-1] & length
+    where
+        expand boards row = do
+            board <- boards
+            col <- [0..n-1]
+            if isValid' n (row,col) board
+                then return ((row,col) : board)
+                else []
+
+-------------------------------------------------------------------------------
+
+nQueens''' n = foldl' expand [[]] [0..n-1] & length
+    where
+        expand boards row = do
+            board <- boards
+            col <- [0..n-1]
+            guard $ isValid' n (row,col) board
+            return ((row,col) : board)
+
+-------------------------------------------------------------------------------
