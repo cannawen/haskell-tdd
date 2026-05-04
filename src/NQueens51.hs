@@ -1,4 +1,6 @@
-module NQueens51 (calculateNQueens) where
+module NQueens51 
+    (calculateNQueens,
+    isValidInDir) where
 
 import Data.Array
 import Data.Function
@@ -46,12 +48,23 @@ createGrid n = [[Valid | x <- [0..n]] | y <- [0..n]]
 
 -------------------------------------------------------------------------------
 
-calc :: Int -> Int
-calc n = calc' (permutations [0..n-1])
+type BoardSize = Int
+type QueenCoordinate = (Row, Column)
 
-calc' :: [[Int]] -> Int
-calc' configurations = filter isValid configurations & length
+calc :: BoardSize -> Int
+calc n = calc' n $ map (\p -> zip [0..] p) (permutations [0..n-1])
 
-isValid :: [Int] -> Bool
-isValid configuration = False -- TODO
-  where qCoords = zip [0..] configuration
+calc' :: BoardSize -> [[QueenCoordinate]] -> Int
+calc' n possibleBoards = filter (isValid n) possibleBoards & length
+
+isValid :: BoardSize -> [QueenCoordinate] -> Bool
+isValid n board = and $ map (\coord -> map (isValidInDir n board coord) deltas & and) board
+
+deltas :: [(Row, Column)]
+deltas = [(dx, dy) | dx <- [-1, 1], dy <- [-1, 1]]
+
+isValidInDir :: Int -> [(Row, Column)] -> (Row, Column) -> (Row, Column) -> Bool
+isValidInDir n board start dir = 
+    (r >= n || c >= n || r < 0 || c < 0 ) ||
+    not (index `elem` board)  && isValidInDir n board index dir
+    where index@(r, c) = (fst start + fst dir, snd start + snd dir)
