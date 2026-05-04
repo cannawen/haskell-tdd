@@ -83,13 +83,13 @@ nQueens n = board3
         board0 = [[(0,0)],[(0,1)],[(0,2)],[(0,3)]]
 
         queenPosRow1 = [(1,0),(1,1),(1,2),(1,3)]
-        board1 = concatMap (\board -> map (\q -> if isValid 4 (q:board) then q:board else []) queenPosRow1) board0 & filter (not . null)
+        board1 = concatMap (\board -> map (\q -> if isValid' 4 q board then q:board else []) queenPosRow1) board0 & filter (not . null)
 
         queenPosRow2 = [(2,0),(2,1),(2,2),(2,3)]
-        board2 = concatMap (\board -> map (\q -> if isValid 4 (q:board) then q:board else []) queenPosRow2) board1 & filter (not . null)
+        board2 = concatMap (\board -> map (\q -> if isValid' 4 q board then q:board else []) queenPosRow2) board1 & filter (not . null)
 
         queenPosRow3 = [(3,0),(3,1),(3,2),(3,3)]
-        board3 = concatMap (\board -> map (\q -> if isValid 4 (q:board) then q:board else []) queenPosRow3) board2 & filter (not . null)
+        board3 = concatMap (\board -> map (\q -> if isValid' 4 q board then q:board else []) queenPosRow3) board2 & filter (not . null)
 
 -------------------------------------------------------------------------------
 
@@ -100,7 +100,7 @@ nQueens' n =
         (\board -> 
             map 
             (\q -> 
-                if isValid 4 (q:board) then q:board else []) 
+                if isValid' n q board then q:board else []) 
             (map (\col -> (row, col)) [0..n-1]))
         boards
         & filter (not . null)
@@ -119,12 +119,21 @@ nQueens'' n = foldl' expand [[]] [0..n-1] & length
 
 -------------------------------------------------------------------------------
 
-nQueens''' n = foldl' expand [[]] [0..n-1] & length
+nQueens''' n = foldM expand [] [0..n-1] & length
     where
-        expand boards row = do
-            board <- boards
+        expand board row = do
             col <- [0..n-1]
             guard $ isValid' n (row,col) board
             return ((row,col) : board)
+
+-------------------------------------------------------------------------------
+
+nQueens'''' n = foldl' expand [[]] [0..n-1] & length
+    where
+        expand boards row = 
+            [(row, col) : board
+            | board <- boards
+            , col <- [0..n-1]
+            , isValid' n (row,col) board]
 
 -------------------------------------------------------------------------------
