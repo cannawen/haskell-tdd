@@ -86,3 +86,18 @@ nQueens n = board3
 
         queenPosRow3 = [(3,0),(3,1),(3,2),(3,3)]
         board3 = concatMap (\board -> map (\q -> if isValid 4 (q:board) then q:board else []) queenPosRow3) board2 & filter (not . null)
+
+-------------------------------------------------------------------------------
+
+nQueens' n = 
+    foldl' 
+    (\boards row ->
+        concatMap 
+        (\board -> 
+            map 
+            (\q -> 
+                if isValid 4 (q:board) then q:board else []) 
+            (map (\col -> (row, col)) [0..n-1]))
+        boards
+        & filter (not . null)
+    ) [[]] [0..n-1]
