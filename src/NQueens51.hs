@@ -1,5 +1,5 @@
 module NQueens51 
-    (calculateNQueens,
+    (nQueens,
     isValidInDir) where
 
 import Data.Array
@@ -8,6 +8,8 @@ import Data.List
 import Lib
 import Control.Applicative (Alternative(empty))
 import Control.Monad
+
+-- Very not functional; represent each cell in board -----------------------------------------------------------------------------
 
 type Row = Int
 type Column = Int
@@ -21,14 +23,13 @@ instance Show Cell where
 
 type Board =  [[Cell]]
 
--- calculateNQueens :: Int -> Int
-calculateNQueens n = calculateNQueens' (n-1) (createGrid (n-1)) & length
+nQueens n = nQueens' (n-1) (createGrid (n-1)) & length
 
-calculateNQueens' :: Int -> Board -> [Board]
-calculateNQueens' n board =
+nQueens' :: Int -> Board -> [Board]
+nQueens' n board =
     if countQueens board == n + 1
         then [board]
-        else concatMap (\board -> calculateNQueens' n board) possibleFutures
+        else concatMap (\board -> nQueens' n board) possibleFutures
     where
         nextRow = countQueens board
         openCells = [(nextRow, y) | y <- [0..n], board !! nextRow !! y == Valid]
@@ -48,16 +49,16 @@ addQueen n x y board = [[newCell r c | c <- [0..n]] | r <- [0..n]]
 createGrid :: Int -> Board
 createGrid n = [[Valid | x <- [0..n]] | y <- [0..n]]
 
--------------------------------------------------------------------------------
+-- Brute force check all solutions with one Q per row/column -----------------------------------------------------------------------------
 
 type BoardSize = Int
 type QueenCoordinate = (Row, Column)
 
-calc :: BoardSize -> Int
-calc n = calc' n $ map (\p -> zip [0..] p) (permutations [0..n-1])
+nQueens'' :: BoardSize -> Int
+nQueens'' n = nQueens''' n $ map (\p -> zip [0..] p) (permutations [0..n-1])
 
-calc' :: BoardSize -> [[QueenCoordinate]] -> Int
-calc' n possibleBoards = filter (isValid n) possibleBoards & length
+nQueens''' :: BoardSize -> [[QueenCoordinate]] -> Int
+nQueens''' n possibleBoards = filter (isValid n) possibleBoards & length
 
 isValid :: BoardSize -> [QueenCoordinate] -> Bool
 isValid n board = and $ map (\coord -> map (isValidInDir n board coord) deltas & and) board
@@ -74,10 +75,9 @@ isValidInDir n board start dir =
     not (index `elem` board)  && isValidInDir n board index dir
     where index@(r, c) = (fst start + fst dir, snd start + snd dir)
 
--------------------------------------------------------------------------------
+-- Wasn't sure how to to a map over the solution; hard-coded for 4 -----------------------------------------------------------------------------
 
--- nQueens :: BoardSize -> Int
-nQueens n = board3
+nQueens'''' n = board3
     where
         queenPosRow0 = [(0,0),(0,1),(0,2),(0,3)]
         board0 = [[(0,0)],[(0,1)],[(0,2)],[(0,3)]]
@@ -91,9 +91,9 @@ nQueens n = board3
         queenPosRow3 = [(3,0),(3,1),(3,2),(3,3)]
         board3 = concatMap (\board -> map (\q -> if isValid' 4 q board then q:board else []) queenPosRow3) board2 & filter (not . null)
 
--------------------------------------------------------------------------------
+-- Transformed the hard coded stuff into a loop -----------------------------------------------------------------------------
 
-nQueens' n = 
+nQueens''''' n = 
     foldl' 
     (\boards row ->
         concatMap 
@@ -106,9 +106,9 @@ nQueens' n =
         & filter (not . null)
     ) [[]] [0..n-1]
 
--------------------------------------------------------------------------------
+-- Turn the loop into using monads -----------------------------------------------------------------------------
 
-nQueens'' n = foldl' expand [[]] [0..n-1] & length
+nQueens'''''' n = foldl' expand [[]] [0..n-1] & length
     where
         expand boards row = do
             board <- boards
@@ -117,18 +117,18 @@ nQueens'' n = foldl' expand [[]] [0..n-1] & length
                 then return ((row,col) : board)
                 else []
 
--------------------------------------------------------------------------------
+-- Monadic reduction & guard -----------------------------------------------------------------------------
 
-nQueens''' n = foldM expand [] [0..n-1] & length
+nQueens''''''' n = foldM expand [] [0..n-1] & length
     where
         expand board row = do
             col <- [0..n-1]
             guard $ isValid' n (row,col) board
             return ((row,col) : board)
 
--------------------------------------------------------------------------------
+-- List Comprehension -----------------------------------------------------------------------------
 
-nQueens'''' n = foldl' expand [[]] [0..n-1] & length
+nQueens'''''''' n = foldl' expand [[]] [0..n-1] & length
     where
         expand boards row = 
             [(row, col) : board
@@ -136,4 +136,4 @@ nQueens'''' n = foldl' expand [[]] [0..n-1] & length
             , col <- [0..n-1]
             , isValid' n (row,col) board]
 
--------------------------------------------------------------------------------
+-- TODO: the `isValid'` fn can be simplified since we are only placing one Q per row -----------------------------------------------------------------------------

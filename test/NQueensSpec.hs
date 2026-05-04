@@ -4,18 +4,18 @@ import Test.Hspec
 import Lib (listToArray)
 
 import NQueens51 (
-    calculateNQueens
+    nQueens
     , isValidInDir)
 
 spec :: Spec
 spec = do
     describe "n Queens" $ do
         it "example 1" $ do
-            calculateNQueens 4 `shouldBe` 2
+            nQueens 4 `shouldBe` 2
         it "example 2" $ do
-            calculateNQueens 1 `shouldBe` 1
+            nQueens 1 `shouldBe` 1
         it "should for for board=9" $ do
-            calculateNQueens 9 `shouldBe` 352
+            nQueens 9 `shouldBe` 352
     describe "isValidInDir" $ do 
         describe "out of bounds" $ do
             it "should return True" $ do
