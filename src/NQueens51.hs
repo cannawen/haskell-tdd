@@ -61,7 +61,7 @@ nQueens''' :: BoardSize -> [[QueenCoordinate]] -> Int
 nQueens''' n possibleBoards = filter (isValid n) possibleBoards & length
 
 isValid :: BoardSize -> [QueenCoordinate] -> Bool
-isValid n board = and $ map (\coord -> map (isValidInDir n board coord) deltas & and) board
+isValid n board = and $ map (\coord -> isValid' n coord board) board
 
 isValid' :: BoardSize -> QueenCoordinate -> [QueenCoordinate] -> Bool
 isValid' n potentialQueen board = map (isValidInDir n board potentialQueen) deltas & and
@@ -137,3 +137,15 @@ nQueens'''''''' n = foldl' expand [[]] [0..n-1] & length
             , isValid' n (row,col) board]
 
 -- TODO: the `isValid'` fn can be simplified since we are only placing one Q per row -----------------------------------------------------------------------------
+
+-- isValid' :: BoardSize -> QueenCoordinate -> [QueenCoordinate] -> Bool
+-- isValid' n potentialQueen board = map (isValidInDir n board potentialQueen) deltas & and
+
+-- deltas :: [(Row, Column)]
+-- deltas = [(dx, dy) | dx <- [-1, 0, 1], dy <- [-1, 0, 1], (dx, dy) /= (0, 0)]
+
+-- isValidInDir :: Int -> [(Row, Column)] -> (Row, Column) -> (Row, Column) -> Bool
+-- isValidInDir n board start dir = 
+--     (r >= n || c >= n || r < 0 || c < 0 ) ||
+--     not (index `elem` board)  && isValidInDir n board index dir
+--     where index@(r, c) = (fst start + fst dir, snd start + snd dir)
