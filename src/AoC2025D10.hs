@@ -1,11 +1,12 @@
 module AoC2025D9
-  (main, part1) where
+  (main, machine) where
 
 import Data.Array
 import Data.Function
 import Data.List
 import Data.List.Split
 import Lib
+import Control.Applicative
 
 data Status = Off | Toggle | On deriving (Eq, Ord, Show)
 
@@ -18,10 +19,18 @@ part1 input =
     & lines
     & map machine
 
-machine line = (target, buttons)
+machine line = pressedButtons
+    & map ( foldl (\(m,c) b -> (mergeList m b, length b)) (startingState, 0) )
+    & filter (\(output, _) -> output == target)
+    -- & map snd
+    -- & sort
+    -- & head
+
     where
+        startingState = take (length target) (repeat Off)
         target = parseTarget line
         buttons = parseButtons line
+        pressedButtons = mapM (\b -> [b] <|> [[]]) buttons
 
 mergeStatus :: Status -> Status -> Status
 mergeStatus s1 s2 = mergeStatusSorted (min s1 s2) (max s1 s2)
