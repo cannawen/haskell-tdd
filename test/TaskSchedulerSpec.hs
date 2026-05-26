@@ -19,3 +19,8 @@ spec = do
       time ["A", "B"] 0 `shouldBe` 2
       time ["A", "B"] 1 `shouldBe` 2
       time ["A", "B"] 2 `shouldBe` 2
+  describe "test cases" $ do 
+    it "works" $ do 
+      time ["A","A","A","B","B","B"] 2 `shouldBe` 8
+      time ["A","C","A","B","D","B"] 1 `shouldBe` 6
+      time ["A","A","A", "B","B","B"] 3 `shouldBe` 10
