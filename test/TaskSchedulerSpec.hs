@@ -10,7 +10,12 @@ spec = do
       time ["A"] 0 `shouldBe` 1
       time ["A"] 1 `shouldBe` 1
       time ["A"] 2 `shouldBe` 1
-    it "a single element repeated should return in (element count * succ interval) time" $ do
-      time ["A", "A"] 0 `shouldBe` 2
-      time ["A", "A"] 1 `shouldBe` 4
-      time ["A", "A"] 2 `shouldBe` 6
+    it "a single element repeated should return in element count * ((element count - 1) interval) time" $ do
+      time ["A", "A", "A"] 0 `shouldBe` 3
+      time ["A", "A", "A"] 1 `shouldBe` 5
+      time ["A", "A", "A"] 2 `shouldBe` 7
+  describe "two different elements" $ do 
+    it "should place them side by side" $ do
+      time ["A", "B"] 0 `shouldBe` 2
+      time ["A", "B"] 1 `shouldBe` 2
+      time ["A", "B"] 2 `shouldBe` 2
