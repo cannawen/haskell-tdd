@@ -25,3 +25,4 @@ spec = do
     it "should work" $ do
       canReachEnd "011010" 2 3 `shouldBe` True
       canReachEnd "01101110" 2 3 `shouldBe` False
+      canReachEnd "000000000" 6 7 `shouldBe` False

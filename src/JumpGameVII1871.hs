@@ -1,15 +1,14 @@
 module JumpGameVII1871
   (canReachEnd) where
 
-
 canReachEnd :: [Char] -> Int -> Int -> Bool
-canReachEnd string minJump maxJump = 
-  if string == "0" then True else or $ map jumpFn [minJump .. maxJump]
-
-  where 
-    jumpFn jump = if validJump string jump
-                    then canReachEnd (drop jump string) minJump maxJump
-                    else False
+canReachEnd string minJump maxJump = or $ do
+  jump <- [minJump .. maxJump]
+  if string == "0" 
+    then return True 
+    else if validJump string jump
+    then return $ canReachEnd (drop jump string) minJump maxJump
+    else return False
 
 validJump :: [Char] -> Int -> Bool
 validJump string jump = 
