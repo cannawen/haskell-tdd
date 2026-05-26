@@ -7,7 +7,7 @@ import Data.List
 import Data.List.Split
 import Lib
 
-data Status = Off | On deriving (Eq, Ord, Show)
+data Status = Off | Toggle | On deriving (Eq, Show)
 
 main = do
     contents <- readFile "src/AoC2025D10.input.txt"
@@ -18,7 +18,9 @@ part1 input =
     & lines
     & map machine
 
-machine line = targetIndicator line
+machine line = 
+    -- targetIndicator line
+    buttons line
 
 targetIndicator :: [Char] -> [Status]
 targetIndicator line =
@@ -26,3 +28,22 @@ targetIndicator line =
     & splitOn " "
     & head
     & foldr (\c memo -> if c == '.' then Off:memo else if c == '#' then On:memo else memo) []
+
+buttons :: [Char] -> [[Status]]
+-- buttons :: String -> [[Int]]
+buttons line = 
+    line
+    & splitOn " "
+    & tail . init
+    & map (map read . splitOn "," . tail . init)
+    & map createButton
+
+createButton :: [Int] -> [Status]
+createButton positions = 
+    foldl (\memo i -> placeToggleAtIndexInArray i memo) [] positions
+
+placeToggleAtIndexInArray :: Int -> [Status] -> [Status]
+placeToggleAtIndexInArray i arr = 
+    if length arr > i 
+        then take i arr ++ [Toggle] ++ (drop i arr)
+        else arr ++ (take (i - length arr) (repeat Off)) ++ [Toggle]
