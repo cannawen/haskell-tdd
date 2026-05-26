@@ -1,5 +1,9 @@
-module AoC2025D9
-  (main, machine) where
+module AoC2025D10
+  (Status(..)
+  , main
+  , machine
+  , parseButtons
+  , allCombinationOfButtons) where
 
 import Data.Array
 import Data.Function
@@ -9,6 +13,8 @@ import Lib
 import Control.Applicative
 
 data Status = Off | Toggle | On deriving (Eq, Ord, Show)
+type Light = Int
+type Button = [Light]
 
 main = do
     contents <- readFile "src/AoC2025D10.input.txt"
@@ -20,8 +26,6 @@ part1 input =
     & map machine
 
 machine line = pressedButtons
-    & map ( foldl (\(m,c) b -> (mergeList m b, length b)) (startingState, 0) )
-    & filter (\(output, _) -> output == target)
     -- & map snd
     -- & sort
     -- & head
@@ -31,6 +35,11 @@ machine line = pressedButtons
         target = parseTarget line
         buttons = parseButtons line
         pressedButtons = mapM (\b -> [b] <|> [[]]) buttons
+
+allCombinationOfButtons :: [Button] -> [[Button]]
+allCombinationOfButtons buttons = foldr (\button memo -> fmap (button :) memo ++ memo) [[]] buttons
+
+    -- & map (foldl (\m b -> mergeList m b) startingState)
 
 mergeStatus :: Status -> Status -> Status
 mergeStatus s1 s2 = mergeStatusSorted (min s1 s2) (max s1 s2)
@@ -53,15 +62,14 @@ parseTarget line =
     & head
     & foldr (\c memo -> if c == '.' then Off:memo else if c == '#' then On:memo else memo) []
 
-parseButtons :: [Char] -> [[Status]]
+parseButtons :: [Char] -> [Button]
 parseButtons line = 
     line
     & splitOn " "
     & tail . init
     & map (map read . splitOn "," . tail . init)
-    & map createButton
 
-createButton :: [Int] -> [Status]
+createButton :: Button -> [Status]
 createButton positions = 
     foldl (\memo i -> placeToggleAtIndexInArray i memo) [] positions
 
