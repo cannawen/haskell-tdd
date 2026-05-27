@@ -8,6 +8,7 @@ dependencies:
   - array
   - containers
   - split
+  - MemoTrie
 
 library:
   source-dirs: src
