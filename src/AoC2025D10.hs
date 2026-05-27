@@ -107,29 +107,24 @@ parseJoltage line =
     & splitOn ","
     & map read
 
--- smashButtons :: [Button] -> [Light] -> [Light] -> p3
+smashButtons :: [Button] -> [Button] -> [Int] -> [[Button]]
 smashButtons sortedButtons buttonsPressed target =
-    if sumPresses buttonsPressed target == target 
+    if invalid current target
+        then []
+        else if current == target
         then [buttonsPressed]
         else
             concatMap 
-            (\button -> 
-                if canAddButton button buttonsPressed target
-                    then smashButtons sortedButtons (button:buttonsPressed) target 
-                    else [])
+            (\button -> smashButtons sortedButtons (button:buttonsPressed) target)
             sortedButtons
+    where current = sumPresses buttonsPressed (length target)
 
+invalid current target = or $
+    zip current target
+    & map (\(c,t) -> c > t)
 
-canAddButton :: Button -> [Button] -> [Int] -> Bool
-canAddButton button buttonsPressed target = addButton button buttonsPressed target <= target
-
-addButton :: Button -> [Button] -> [Int] -> [Int]
-addButton button buttonsPressed target = sumPresses [button] current
-    where current = sumPresses buttonsPressed target
-
--- TODO kinda sus passing target in here
-sumPresses :: [Button] -> [Int] -> [Int]
-sumPresses buttons target = 
+sumPresses :: [Button] -> Int -> [Int]
+sumPresses buttons len = 
     buttons
     & concat
     & sort
@@ -137,4 +132,4 @@ sumPresses buttons target =
     & map (\g -> (head g, length g))
     & foldl 
         (\m (i, count) -> (take i m) ++ [count] ++ (drop (succ i) m))
-        (take (length target) (repeat 0))
+        (take len (repeat 0))
