@@ -32,12 +32,12 @@ machine line = pressedButtons
     & filter (\(b, _) -> b == target)
     & map snd
     & minimum
-
     where
         startingState = take (length target) (repeat Off)
         target = parseTarget line
         buttons = parseButtons line
         pressedButtons = mapM (\b -> [b] <|> [[]]) buttons
+        -- pressedButtons = allCombinationOfButtons buttons
 
 allCombinationOfButtons :: [Button] -> [[Button]]
 allCombinationOfButtons buttons = foldr (\button memo -> fmap (button :) memo ++ memo) [[]] buttons
@@ -85,3 +85,56 @@ placeToggleAtIndexInArray i arr =
     if length arr > i 
         then take i arr ++ [Toggle] ++ (drop i arr)
         else arr ++ (take (i - length arr) (repeat Off)) ++ [Toggle]
+
+part2 input = 
+    input
+    & lines
+    & map machine2
+
+machine2 line = smashButtons sortedButtons [] joltages
+    
+    where
+        joltages = parseJoltage line
+        sortedButtons = parseButtons line
+            & sortOn length
+            & reverse
+
+parseJoltage :: [Char] -> [Int]
+parseJoltage line = 
+    splitOn " " line
+    & last
+    & init . tail
+    & splitOn ","
+    & map read
+
+-- smashButtons :: [Button] -> [Light] -> [Light] -> p3
+smashButtons sortedButtons buttonsPressed target =
+    if sumPresses buttonsPressed target == target 
+        then [buttonsPressed]
+        else
+            concatMap 
+            (\button -> 
+                if canAddButton button buttonsPressed target
+                    then smashButtons sortedButtons (button:buttonsPressed) target 
+                    else [])
+            sortedButtons
+
+
+canAddButton :: Button -> [Button] -> [Int] -> Bool
+canAddButton button buttonsPressed target = addButton button buttonsPressed target <= target
+
+addButton :: Button -> [Button] -> [Int] -> [Int]
+addButton button buttonsPressed target = sumPresses [button] current
+    where current = sumPresses buttonsPressed target
+
+-- TODO kinda sus passing target in here
+sumPresses :: [Button] -> [Int] -> [Int]
+sumPresses buttons target = 
+    buttons
+    & concat
+    & sort
+    & group
+    & map (\g -> (head g, length g))
+    & foldl 
+        (\m (i, count) -> (take i m) ++ [count] ++ (drop (succ i) m))
+        (take (length target) (repeat 0))
