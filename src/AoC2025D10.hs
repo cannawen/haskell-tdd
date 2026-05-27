@@ -25,6 +25,7 @@ part1 input =
     input
     & lines
     & map machine
+    & sum
 
 machine line = pressedButtons
     & map (\b -> (applyButtons startingState b, length (filter (not . null) b)))
