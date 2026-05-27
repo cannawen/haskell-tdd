@@ -3,7 +3,8 @@ module AoC2025D10
   , main
   , machine
   , parseButtons
-  , allCombinationOfButtons) where
+  , allCombinationOfButtons
+  , applyButtons) where
 
 import Data.Array
 import Data.Function
@@ -26,9 +27,10 @@ part1 input =
     & map machine
 
 machine line = pressedButtons
-    -- & map snd
-    -- & sort
-    -- & head
+    & map (\b -> (applyButtons startingState b, length (filter (not . null) b)))
+    & filter (\(b, _) -> b == target)
+    & map snd
+    & minimum
 
     where
         startingState = take (length target) (repeat Off)
@@ -39,7 +41,11 @@ machine line = pressedButtons
 allCombinationOfButtons :: [Button] -> [[Button]]
 allCombinationOfButtons buttons = foldr (\button memo -> fmap (button :) memo ++ memo) [[]] buttons
 
-    -- & map (foldl (\m b -> mergeList m b) startingState)
+applyButtons :: [Status] -> [Button] -> [Status]
+applyButtons startingState buttons  = 
+    buttons
+    & map createButton
+    & foldl (\m b -> mergeList m b) startingState
 
 mergeStatus :: Status -> Status -> Status
 mergeStatus s1 s2 = mergeStatusSorted (min s1 s2) (max s1 s2)
