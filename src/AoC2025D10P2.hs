@@ -1,7 +1,11 @@
 module AoC2025D10P2
-  (Status(..)
+  (
+    Status(..)
   , main
+  , parseJoltage
   , parseButtons
+  , smashButtons
+  , machine2
   ) where
 
 import Data.Array
@@ -18,7 +22,7 @@ type Light = Int
 type Button = [Light]
 
 main = do
-    contents <- readFile "src/AoC2025D10.input.txt"
+    contents <- readFile "src/AoC2025D10.input.mini.txt"
     print $ part2 contents
     
 part2 input = 
@@ -27,7 +31,9 @@ part2 input =
     & map machine2
 
 machine2 line = smashButtons sortedButtons Set.empty joltages
-    
+    & map Set.size
+    & minimum
+
     where
         joltages = parseJoltage line
         sortedButtons = parseButtons line
@@ -65,9 +71,11 @@ smashButtonsImpl (sortedButtons, (pressedList, target)) =
         then [pressedList]
         else
             concatMap
-            (\button -> smashButtonsMemo (sortedButtons, (Set.toAscList (Set.insert button (Set.fromList pressedList)), target)))
-            sortedButtons
-    where current = sumPresses (Set.fromList pressedList) (length target)
+            (\button -> smashButtonsMemo (sortedButtons, (Set.toAscList (Set.insert button pressedSet), target)))
+            (filter (\button -> not (Set.member button pressedSet)) sortedButtons)
+    where
+        pressedSet = Set.fromList pressedList
+        current = sumPresses pressedSet (length target)
 
 invalid current target = or $
     zip current target

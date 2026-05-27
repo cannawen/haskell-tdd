@@ -1,4 +1,4 @@
-module AoC2025D10Spec (spec) where
+module AoC2025D10P1Spec (spec) where
 
 import Test.Hspec
 import AoC2025D10P1 (
