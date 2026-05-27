@@ -12,6 +12,7 @@ import Data.List
 import Data.List.Split
 import Lib
 import Control.Applicative
+import qualified Data.Set  as Set
 
 data Status = Off | Toggle | On deriving (Eq, Ord, Show)
 type Light = Int
@@ -91,7 +92,7 @@ part2 input =
     & lines
     & map machine2
 
-machine2 line = smashButtons sortedButtons [] joltages
+machine2 line = smashButtons sortedButtons Set.empty joltages
     
     where
         joltages = parseJoltage line
@@ -107,7 +108,7 @@ parseJoltage line =
     & splitOn ","
     & map read
 
-smashButtons :: [Button] -> [Button] -> [Int] -> [[Button]]
+smashButtons :: [Button] -> Set.Set Button -> [Int] -> [Set.Set Button]
 smashButtons sortedButtons buttonsPressed target =
     if invalid current target
         then []
@@ -115,7 +116,7 @@ smashButtons sortedButtons buttonsPressed target =
         then [buttonsPressed]
         else
             concatMap 
-            (\button -> smashButtons sortedButtons (button:buttonsPressed) target)
+            (\button -> smashButtons sortedButtons (Set.insert button buttonsPressed) target)
             sortedButtons
     where current = sumPresses buttonsPressed (length target)
 
@@ -123,9 +124,10 @@ invalid current target = or $
     zip current target
     & map (\(c,t) -> c > t)
 
-sumPresses :: [Button] -> Int -> [Int]
-sumPresses buttons len = 
+sumPresses :: Set.Set Button -> Int -> [Int]
+sumPresses buttons len =
     buttons
+    & Set.toList
     & concat
     & sort
     & group
