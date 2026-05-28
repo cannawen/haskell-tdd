@@ -31,7 +31,9 @@ part2 input =
     & map machine2
 
 machine2 line = smashButtons sortedButtons Set.empty joltages
-    & map Set.size
+    & map Set.toList
+    & map (map snd)
+    & map length
     & minimum
 
     where
