@@ -47,7 +47,7 @@ parseButtons line =
     & tail . init
     & map (map read . splitOn "," . tail . init)
     
-parseJoltage :: [Char] -> [Int]
+parseJoltage :: [Char] -> [Light]
 parseJoltage line = 
     splitOn " " line
     & last
@@ -55,15 +55,15 @@ parseJoltage line =
     & splitOn ","
     & map read
 
-smashButtons :: [Button] -> Set.Set Button -> [Int] -> [Set.Set Button]
-smashButtons sortedButtons buttonsPressed target =
-    smashButtonsMemo (sortedButtons, (Set.toAscList buttonsPressed, target))
+smashButtons :: [Button] -> Set.Set Button -> [Light] -> [Set.Set (Button, Int)]
+smashButtons sortedButtons _ target =
+    smashButtonsMemo (sortedButtons, ([], target))
     & map Set.fromList
 
-smashButtonsMemo :: ([[Int]], ([[Int]], [Int])) -> [[[Int]]]
+smashButtonsMemo :: ([Button], ([(Button, Int)], [Light])) -> [[(Button, Int)]]
 smashButtonsMemo = memo smashButtonsImpl
 
-smashButtonsImpl :: ([[Int]], ([[Int]], [Int])) -> [[[Int]]]
+smashButtonsImpl :: ([Button], ([(Button, Int)], [Light])) -> [[(Button, Int)]]
 smashButtonsImpl (sortedButtons, (pressedList, target)) =
     if invalid current target
         then []
@@ -71,24 +71,26 @@ smashButtonsImpl (sortedButtons, (pressedList, target)) =
         then [pressedList]
         else
             concatMap
-            (\button -> smashButtonsMemo (sortedButtons, (Set.toAscList (Set.insert button pressedSet), target)))
-            (filter (\button -> not (Set.member button pressedSet)) sortedButtons)
+            (\button -> smashButtonsMemo (sortedButtons, (insertCount button pressedList, target)))
+            sortedButtons
     where
-        pressedSet = Set.fromList pressedList
-        current = sumPresses pressedSet (length target)
+        current = sumPresses pressedList (length target)
+
+insertCount :: Button -> [(Button, Int)] -> [(Button, Int)]
+insertCount button [] = [(button, 1)]
+insertCount button ((b,c):rest)
+    | button == b = (b, c+1) : rest
+    | button < b  = (button, 1) : (b,c) : rest
+    | otherwise   = (b,c) : insertCount button rest
 
 invalid current target = or $
     zip current target
     & map (\(c,t) -> c > t)
 
-sumPresses :: Set.Set Button -> Int -> [Int]
-sumPresses buttons len =
-    buttons
-    & Set.toList
-    & concat
-    & sort
-    & group
-    & map (\g -> (head g, length g))
-    & foldl 
-        (\m (i, count) -> (take i m) ++ [count] ++ (drop (succ i) m))
-        (take len (repeat 0))
+sumPresses :: [(Button, Int)] -> Int -> [Light]
+sumPresses buttonCounts len =
+    foldl
+        (\arr (button, count) ->
+            foldl (\a i -> take i a ++ [a !! i + count] ++ drop (succ i) a) arr button)
+        (replicate len 0)
+        buttonCounts

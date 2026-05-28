@@ -22,9 +22,9 @@ spec = do
       parseButtons "[] (1,2) (3) {}" `shouldBe` [[1, 2], [3]]
   describe "smashButtons" $ do
     it "should be able to press buttons" $ do
-      smashButtons [[1]] Set.empty [0,1] `shouldBe` [Set.singleton [1]]
-      smashButtons [[0],[1]] Set.empty [0,1] `shouldBe` [Set.singleton [1]]
-      smashButtons [[1],[0]] Set.empty [0,2] `shouldBe` [Set.singleton [1]]
+      smashButtons [[1]] Set.empty [0,1] `shouldBe` [Set.fromList [([1],1)]]
+      smashButtons [[0],[1]] Set.empty [0,1] `shouldBe` [Set.fromList [([1],1)]]
+      smashButtons [[1],[0]] Set.empty [0,2] `shouldBe` [Set.fromList [([1],2)]]
   -- describe "machine2" $ do
   --   it "works?" $ do
   --     machine2 "[.##.] (3) (1,3) (2) (2,3) (0,2) (0,1) {3,5,4,7}" `shouldBe` 10
