@@ -33,24 +33,13 @@ part2 input =
     & map machine2
 
 -- machine2 :: [Char] -> Int
-machine2 line =  possibleButtonCombos1
-    & filter (doButtonsMatchJoltage joltages)
+machine2 line =  possibleButtonCombos joltages buttons
     & map (length . concat)
     & minimum
 
     where
         joltages = parseJoltage line
-        sortedButtons = parseButtons line
-            & sortOn length
-            & reverse
-        maxPressCount = map (\b -> maxButtonPresses b joltages) sortedButtons
-        possibleButtonCombos1 = 
-            map (\(button, maxCount) -> do
-                count <- [0..maxCount]
-                return (take count (repeat button))
-            ) (zip sortedButtons maxPressCount)
-            & sequence
-
+        buttons = parseButtons line
 
 possibleButtonCombos :: [Joltage] -> [Button] -> [[Button]]
 possibleButtonCombos joltage availableButtons
