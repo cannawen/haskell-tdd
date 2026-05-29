@@ -5,6 +5,7 @@ import AoC2025D10P22 (
   Status(..)
   , parseJoltage
   , parseButtons
+  , buttonsToJoltage
   , maxButtonPresses
   , machine2
   )
@@ -20,6 +21,11 @@ spec = do
     it "put the buttons in the right place" $ do
       parseButtons "[] (1) (2) {}" `shouldBe` [[1], [2]]
       parseButtons "[] (1,2) (3) {}" `shouldBe` [[1, 2], [3]]
+  describe "buttonsToJoltage" $ do
+    it "turns button presses to the right joltage" $ do
+      buttonsToJoltage [[1],[1]] 2 `shouldBe` [0,2]
+      buttonsToJoltage [[0,1],[1]] 2 `shouldBe` [1,2]
+      buttonsToJoltage [[0]] 1 `shouldBe` [1]
   describe "maxButtonPresses" $ do 
     it "should calculate the max button presses" $ do
       maxButtonPresses [0] [0] `shouldBe` 0

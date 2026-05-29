@@ -4,6 +4,7 @@ module AoC2025D10P22
   , main
   , parseJoltage
   , parseButtons
+  , buttonsToJoltage
   , maxButtonPresses
   , machine2
   ) where
@@ -50,12 +51,17 @@ machine2 line =  possibleButtonCombos
             & sequence
 
 doButtonsMatchJoltage :: [Joltage] -> [[Button]] -> Bool
-doButtonsMatchJoltage  joltage buttons = 
-    joltage == [length (filter (== i) lights) | i <- [0..pred size]]
+doButtonsMatchJoltage joltage buttons = 
+    joltage == buttonsToJoltage lights size
     where
         size = length joltage
-        lights = concat (concat buttons)
+        lights = concat buttons
 
+buttonsToJoltage :: [Button] -> Int -> [Joltage]
+buttonsToJoltage buttons size = 
+    map (\i -> length (filter (== i) flatButtons)) [0..pred size]
+    where
+        flatButtons = concat buttons
 
 maxButtonPresses :: Button -> [Joltage] -> Int
 maxButtonPresses button joltage = minimum $ map (\i -> joltage !! i) button
