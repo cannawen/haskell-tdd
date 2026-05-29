@@ -31,15 +31,19 @@ part2 input =
     input
     & lines
     & map machine2
+    & sum
 
 -- machine2 :: [Char] -> Int
 machine2 line =  possibleButtonCombos joltages buttons
-    & map length
-    & minimum
+    & head
+    & length
 
     where
         joltages = parseJoltage line
         buttons = parseButtons line
+            & sortOn length
+            & reverse
+
 
 possibleButtonCombos :: [Joltage] -> [Button] -> [[Button]]
 possibleButtonCombos joltage availableButtons
@@ -48,7 +52,7 @@ possibleButtonCombos joltage availableButtons
     | null availableButtons = []
     | otherwise = do
         let b = head availableButtons
-        buttonPresses <- [0.. maxButtonPresses b joltage]
+        buttonPresses <- reverse [0.. maxButtonPresses b joltage]
         let pressedButtons = replicate buttonPresses b
         let newJoltage = calcNewJoltage pressedButtons joltage
         restCombos <- possibleButtonCombos newJoltage (tail availableButtons)
