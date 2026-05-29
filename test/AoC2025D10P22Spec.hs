@@ -40,6 +40,7 @@ spec = do
       possibleButtonCombos [0] [[0]] `shouldBe` [[]]
       possibleButtonCombos [1] [[0]] `shouldBe` [[[0]]]
       possibleButtonCombos [2] [[0]] `shouldBe` [[[0],[0]]]
+      possibleButtonCombos [1,2] [[0,1],[1],[0]] `shouldBe` [[[1],[1],[0]],[[0,1],[1]]]
   describe "machine2" $ do
     it "works?" $ do
       machine2 "[....] (3) (1,3) (2) (2,3) (0,2) (0,1) {0,0,0,1}" `shouldBe` 1

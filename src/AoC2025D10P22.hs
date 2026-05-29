@@ -52,25 +52,18 @@ machine2 line =  possibleButtonCombos1
             & sequence
 
 
-possibleButtonCombos ::  [Joltage] -> [Button] -> [Button] -> [[Button]]
-possibleButtonCombos joltage availableButtons selectedButtons = 
-    if joltage == (take (length joltage) (repeat 0))
-        then [selectedButtons]
-    else if (any (< 0) joltage) 
-        then []
-    else
-        map (\b -> do
-            buttonPresses <- [0.. maxButtonPresses b joltage]
-            possibleButtonCombos 
-                (calcNewJoltage joltage (take buttonPresses (repeat b))) 
-                (tail availableButtons)
-                (take buttonPresses (repeat b))
-        ) availableButtons
-        -- map (\(button, maxCount) -> do
-        --     count <- [0..maxCount]
-        --     return (take count (repeat button))
-        -- ) (zip buttons maxPressCount)
-        -- & sequence
+possibleButtonCombos :: [Joltage] -> [Button] -> [[Button]]
+possibleButtonCombos joltage availableButtons
+    | joltage == replicate (length joltage) 0 = [[]]
+    | any (< 0) joltage = []
+    | null availableButtons = []
+    | otherwise = do
+        let b = head availableButtons
+        buttonPresses <- [0.. maxButtonPresses b joltage]
+        let pressedButtons = replicate buttonPresses b
+        let newJoltage = calcNewJoltage pressedButtons joltage
+        restCombos <- possibleButtonCombos newJoltage (tail availableButtons)
+        return (pressedButtons ++ restCombos)
 
 doButtonsMatchJoltage :: [Joltage] -> [[Button]] -> Bool
 doButtonsMatchJoltage joltage buttons = 
