@@ -52,13 +52,25 @@ machine2 line =  possibleButtonCombos1
             & sequence
 
 
-possibleButtonCombos ::  [Joltage] -> [Button] -> [[Button]]
-possibleButtonCombos maxJoltage buttons = [[]]
-            -- map (\(button, maxCount) -> do
-            --     count <- [0..maxCount]
-            --     return (take count (repeat button))
-            -- ) (zip buttons maxPressCount)
-            -- & sequence
+possibleButtonCombos ::  [Joltage] -> [Button] -> [Button] -> [[Button]]
+possibleButtonCombos joltage availableButtons selectedButtons = 
+    if joltage == (take (length joltage) (repeat 0))
+        then [selectedButtons]
+    else if (any (< 0) joltage) 
+        then []
+    else
+        map (\b -> do
+            buttonPresses <- [0.. maxButtonPresses b joltage]
+            possibleButtonCombos 
+                (calcNewJoltage joltage (take buttonPresses (repeat b))) 
+                (tail availableButtons)
+                (take buttonPresses (repeat b))
+        ) availableButtons
+        -- map (\(button, maxCount) -> do
+        --     count <- [0..maxCount]
+        --     return (take count (repeat button))
+        -- ) (zip buttons maxPressCount)
+        -- & sequence
 
 doButtonsMatchJoltage :: [Joltage] -> [[Button]] -> Bool
 doButtonsMatchJoltage joltage buttons = 
@@ -66,6 +78,11 @@ doButtonsMatchJoltage joltage buttons =
     where
         size = length joltage
         lights = concat buttons
+
+calcNewJoltage :: [Button] -> [Joltage] -> [Joltage]
+calcNewJoltage buttonsPressed oldJoltage = 
+    map (\(old, pressed) -> old - pressed) (zip oldJoltage buttonJoltage)
+    where buttonJoltage = buttonsToJoltage buttonsPressed (length oldJoltage)
 
 buttonsToJoltage :: [Button] -> Int -> [Joltage]
 buttonsToJoltage buttons size = 
