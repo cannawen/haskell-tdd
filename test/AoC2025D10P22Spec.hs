@@ -6,11 +6,11 @@ import AoC2025D10P22 (
   , parseJoltage
   , parseButtons
   , buttonsToJoltage
-  , possibleButtonCombos
-  , maxButtonPresses
+  , buttonDelta
+  , findComboCount
   , machine2
   )
-import qualified Data.Set  as Set
+import Data.Array (listArray)
 
 spec :: Spec
 spec = do 
@@ -27,20 +27,19 @@ spec = do
       buttonsToJoltage [[1],[1]] 2 `shouldBe` [0,2]
       buttonsToJoltage [[0,1],[1]] 2 `shouldBe` [1,2]
       buttonsToJoltage [[0]] 1 `shouldBe` [1]
-  describe "maxButtonPresses" $ do 
-    it "should calculate the max button presses" $ do
-      maxButtonPresses [0] [0] `shouldBe` 0
-      maxButtonPresses [0] [1] `shouldBe` 1
-      maxButtonPresses [0,1] [0,0] `shouldBe` 0
-      maxButtonPresses [0,1] [1,1] `shouldBe` 1
-      maxButtonPresses [0,1] [2,2] `shouldBe` 2
-      maxButtonPresses [0,1] [1,2] `shouldBe` 1
-  describe "possibleButtonCombos" $ do
-    it "should calculate possible buttons that stay under joltage" $ do 
-      possibleButtonCombos [0] [[0]] `shouldBe` [[]]
-      possibleButtonCombos [1] [[0]] `shouldBe` [[[0]]]
-      possibleButtonCombos [2] [[0]] `shouldBe` [[[0],[0]]]
-      possibleButtonCombos [1,2] [[0,1],[1],[0]] `shouldBe` [[[0,1],[1]],[[1],[1],[0]]]
+  describe "buttonDelta" $ do
+    it "computes the per-press joltage contribution of a button" $ do
+      buttonDelta 1 [0]   `shouldBe` listArray (0,0) [1]
+      buttonDelta 2 [0,1] `shouldBe` listArray (0,1) [1,1]
+      buttonDelta 2 [1,1] `shouldBe` listArray (0,1) [0,2]
+  describe "findComboCount" $ do
+    it "returns the total button presses for the first valid combo" $ do
+      let arr xs = listArray (0, length xs - 1) xs
+      let withDeltas size bs = map (\b -> (b, buttonDelta size b)) bs
+      findComboCount (arr [0]) (withDeltas 1 [[0]])           `shouldBe` Just 0
+      findComboCount (arr [1]) (withDeltas 1 [[0]])           `shouldBe` Just 1
+      findComboCount (arr [2]) (withDeltas 1 [[0]])           `shouldBe` Just 2
+      findComboCount (arr [1,2]) (withDeltas 2 [[0,1],[1],[0]]) `shouldBe` Just 2
   describe "machine2" $ do
     it "works?" $ do
       machine2 "[....] (3) (1,3) (2) (2,3) (0,2) (0,1) {0,0,0,1}" `shouldBe` 1
