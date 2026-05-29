@@ -34,7 +34,7 @@ part2 input =
 
 -- machine2 :: [Char] -> Int
 machine2 line =  possibleButtonCombos joltages buttons
-    & map (length . concat)
+    & map length
     & minimum
 
     where
