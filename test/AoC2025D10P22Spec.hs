@@ -6,6 +6,7 @@ import AoC2025D10P22 (
   , parseJoltage
   , parseButtons
   , buttonsToJoltage
+  , possibleButtonCombos
   , maxButtonPresses
   , machine2
   )
@@ -34,6 +35,9 @@ spec = do
       maxButtonPresses [0,1] [1,1] `shouldBe` 1
       maxButtonPresses [0,1] [2,2] `shouldBe` 2
       maxButtonPresses [0,1] [1,2] `shouldBe` 1
+  describe "possibleButtonCombos" $ do
+    it "should calculate possible buttons that stay under joltage" $ do 
+      possibleButtonCombos [0] [[0]] `shouldBe` [[]]
   describe "machine2" $ do
     it "works?" $ do
       machine2 "[....] (3) (1,3) (2) (2,3) (0,2) (0,1) {0,0,0,1}" `shouldBe` 1

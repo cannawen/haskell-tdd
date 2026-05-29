@@ -5,6 +5,7 @@ module AoC2025D10P22
   , parseJoltage
   , parseButtons
   , buttonsToJoltage
+  , possibleButtonCombos
   , maxButtonPresses
   , machine2
   ) where
@@ -32,7 +33,7 @@ part2 input =
     & map machine2
 
 -- machine2 :: [Char] -> Int
-machine2 line =  possibleButtonCombos
+machine2 line =  possibleButtonCombos1
     & filter (doButtonsMatchJoltage joltages)
     & map (length . concat)
     & minimum
@@ -43,12 +44,21 @@ machine2 line =  possibleButtonCombos
             & sortOn length
             & reverse
         maxPressCount = map (\b -> maxButtonPresses b joltages) sortedButtons
-        possibleButtonCombos = 
+        possibleButtonCombos1 = 
             map (\(button, maxCount) -> do
                 count <- [0..maxCount]
                 return (take count (repeat button))
             ) (zip sortedButtons maxPressCount)
             & sequence
+
+
+possibleButtonCombos ::  [Joltage] -> [Button] -> [[Button]]
+possibleButtonCombos maxJoltage buttons = [[]]
+            -- map (\(button, maxCount) -> do
+            --     count <- [0..maxCount]
+            --     return (take count (repeat button))
+            -- ) (zip buttons maxPressCount)
+            -- & sequence
 
 doButtonsMatchJoltage :: [Joltage] -> [[Button]] -> Bool
 doButtonsMatchJoltage joltage buttons = 
