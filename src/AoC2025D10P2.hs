@@ -1,4 +1,5 @@
-module AoC2025D10
+module AoC2025D10P2
+
   (Status(..)
   , main
   , machine
