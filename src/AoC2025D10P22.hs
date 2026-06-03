@@ -17,11 +17,12 @@ import Data.List.Split
 import Lib
 import Control.Applicative
 import qualified Data.Set  as Set
-import Data.MemoTrie (memo)
+import qualified Data.Map.Strict as Map
 
 data Status = Off | Toggle | On deriving (Eq, Ord, Show)
 type Joltage = Int
 type Button = [Joltage]
+type MemoMap = Map.Map ([Int], [[Int]]) (Maybe Int)
 
 main = do
     contents <- readFile "src/AoC2025D10.input.txt"
@@ -48,21 +49,55 @@ buttonDelta :: Int -> Button -> Array Int Int
 buttonDelta size button = accumArray (+) 0 (0, size - 1) [(i, 1) | i <- button]
 
 findComboCount :: Array Int Int -> [(Button, Array Int Int)] -> Maybe Int
-findComboCount joltage buttonsWithDeltas
-    | all (== 0) (elems joltage) = Just 0
-    | any (< 0) (elems joltage) = Nothing
-    | not (coverable joltage (map snd buttonsWithDeltas)) = Nothing
+findComboCount joltage buttonsWithDeltas =
+    fst $ findComboCountM joltage buttonsWithDeltas Map.empty
+
+findComboCountM :: Array Int Int -> [(Button, Array Int Int)] -> MemoMap -> (Maybe Int, MemoMap)
+findComboCountM joltage buttonsWithDeltas memo =
+    let key = (elems joltage, map fst buttonsWithDeltas)
+    in case Map.lookup key memo of
+        Just result -> (result, memo)
+        Nothing     ->
+            let (result, memo') = computeM joltage buttonsWithDeltas memo
+            in (result, Map.insert key result memo')
+
+computeM :: Array Int Int -> [(Button, Array Int Int)] -> MemoMap -> (Maybe Int, MemoMap)
+computeM joltage buttonsWithDeltas memo
+    | all (== 0) (elems joltage) = (Just 0, memo)
+    | any (< 0) (elems joltage) = (Nothing, memo)
+    | not (coverable joltage (map snd buttonsWithDeltas)) = (Nothing, memo)
     | otherwise =
         let (b, delta, rest) = pickMostConstrained joltage buttonsWithDeltas
             maxPresses = minimum (map (joltage !) b)
             applyK k   = accum (\old d -> old - k * d) joltage
                              [(i, d) | (i, d) <- assocs delta, d > 0]
-            go k
-                | k < 0     = Nothing
-                | otherwise = case findComboCount (applyK k) rest of
-                    Just count -> Just (count + k)
-                    Nothing    -> go (k - 1)
-        in go maxPresses
+            -- indices no remaining button can cover
+            restCoverage = Set.fromList [i | (_, rd) <- rest, (i, d) <- assocs rd, d > 0]
+            -- for uniquely-covered non-zero indices, k is forced: k = joltage[i] / delta[i]
+            uniqueConstraints = [(joltage ! i, delta ! i)
+                                | i <- nub b
+                                , joltage ! i /= 0
+                                , Set.notMember i restCoverage]
+            forcedK = let ks = [j `div` d | (j, d) <- uniqueConstraints, j `mod` d == 0]
+                      in if length ks /= length uniqueConstraints then Nothing
+                         else case nub ks of
+                             [k0] | k0 <= maxPresses -> Just k0
+                             _                        -> Nothing
+            go k m
+                | k < 0     = (Nothing, m)
+                | otherwise =
+                    let (result, m') = findComboCountM (applyK k) rest m
+                    in case result of
+                        Just count -> (Just (count + k), m')
+                        Nothing    -> go (k - 1) m'
+        in case (uniqueConstraints, forcedK) of
+            ([], _)      -> go maxPresses memo
+            (_, Nothing) -> (Nothing, memo)
+            (_, Just k0) ->
+                let (result, memo') = findComboCountM (applyK k0) rest memo
+                in case result of
+                    Just count -> (Just (count + k0), memo')
+                    Nothing    -> (Nothing, memo')
 
 pickMostConstrained :: Array Int Int -> [(Button, Array Int Int)] -> (Button, Array Int Int, [(Button, Array Int Int)])
 pickMostConstrained joltage buttons =
