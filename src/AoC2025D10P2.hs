@@ -25,25 +25,25 @@ part1 input =
     & lines
     & map machine
 
-machine line = sumRows pressedButtons
+machine line = (target, buttons)
 
     where
         target = parseTarget line
         buttons = parseButtons line
-        pressedButtons = mapM (\b -> [b] <|> [[0,0,0,0]]) buttons
+        -- pressedButtons = mapM (\b -> [b] <|> [[0,0,0,0]]) buttons
 
-sumRows :: [[[Int]]] -> [[Int]]
-sumRows = map sumRow
-  where
-    sumRow :: [[Int]] -> [Int]
-    sumRow = foldl (\acc x -> zipWith (+) acc x) [0, 0, 0, 0] -- Need to tack on info here for how many buttons were pressed
+sumRow :: [[Int]] -> [Int]
+sumRow = foldl (\acc x -> zipWith (+) acc x) [0, 0, 0, 0] -- Need to tack on info here for how many buttons were pressed
 
 parseTarget :: [Char] -> [Light]
 parseTarget line =
     line 
     & splitOn " "
-    & head
-    & foldr (\c memo -> if c == '.' then 0:memo else if c == '#' then 1:memo else memo) []
+    & last
+    & tail 
+    & init
+    & splitOn ","
+    & map read
 
 parseButtons :: [Char] -> [Button]
 parseButtons line = expandedButtons
