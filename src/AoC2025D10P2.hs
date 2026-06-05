@@ -1,11 +1,9 @@
 module AoC2025D10P2
 
-  (Status(..)
-  , main
+  ( main
   , machine
   , parseButtons
-  , allCombinationOfButtons
-  , applyButtons) where
+  ) where
 
 import Data.Array
 import Data.Function
@@ -13,8 +11,8 @@ import Data.List
 import Data.List.Split
 import Lib
 import Control.Applicative
+import qualified Data.Set as Set
 
-data Status = Off | Toggle | On deriving (Eq, Ord, Show)
 type Light = Int
 type Button = [Light]
 
@@ -26,63 +24,41 @@ part1 input =
     input
     & lines
     & map machine
-    & sum
 
-machine line = pressedButtons
-    & map (\b -> (applyButtons startingState b, length (filter (not . null) b)))
-    & filter (\(b, _) -> b == target)
-    & map snd
-    & minimum
+machine line = sumRows pressedButtons
 
     where
-        startingState = take (length target) (repeat Off)
         target = parseTarget line
         buttons = parseButtons line
-        pressedButtons = mapM (\b -> [b] <|> [[]]) buttons
+        pressedButtons = mapM (\b -> [b] <|> [[0,0,0,0]]) buttons
 
-allCombinationOfButtons :: [Button] -> [[Button]]
-allCombinationOfButtons buttons = foldr (\button memo -> fmap (button :) memo ++ memo) [[]] buttons
+sumRows :: [[[Int]]] -> [[Int]]
+sumRows = map sumRow
+  where
+    sumRow :: [[Int]] -> [Int]
+    sumRow = foldl (\acc x -> zipWith (+) acc x) [0, 0, 0, 0] -- Need to tack on info here for how many buttons were pressed
 
-applyButtons :: [Status] -> [Button] -> [Status]
-applyButtons startingState buttons  = 
-    buttons
-    & map createButton
-    & foldl (\m b -> mergeList m b) startingState
-
-mergeStatus :: Status -> Status -> Status
-mergeStatus s1 s2 = mergeStatusSorted (min s1 s2) (max s1 s2)
-
-mergeStatusSorted :: Status -> Status -> Status
-mergeStatusSorted Off Toggle = On
-mergeStatusSorted Toggle On = Off
-mergeStatusSorted Off On = On
-mergeStatusSorted s _ = s
-
-mergeList :: [Status] -> [Status] -> [Status]
-mergeList s1 [] = s1
-mergeList [] s2 = s2
-mergeList s1@(head1:tail1) s2@(head2:tail2) = mergeStatus head1 head2 : mergeList tail1 tail2
-
-parseTarget :: [Char] -> [Status]
+parseTarget :: [Char] -> [Light]
 parseTarget line =
     line 
     & splitOn " "
     & head
-    & foldr (\c memo -> if c == '.' then Off:memo else if c == '#' then On:memo else memo) []
+    & foldr (\c memo -> if c == '.' then 0:memo else if c == '#' then 1:memo else memo) []
 
 parseButtons :: [Char] -> [Button]
-parseButtons line = 
-    line
-    & splitOn " "
-    & tail . init
-    & map (map read . splitOn "," . tail . init)
+parseButtons line = expandedButtons
+    where 
+        indices =
+            line
+            & splitOn " "
+            & tail . init
+            & map (map read . splitOn "," . tail . init)
+            
+        expandedButtons = indices 
+            & map Set.fromList
+            & map toLights
 
-createButton :: Button -> [Status]
-createButton positions = 
-    foldl (\memo i -> placeToggleAtIndexInArray i memo) [] positions
+        max = concat indices & maximum
 
-placeToggleAtIndexInArray :: Int -> [Status] -> [Status]
-placeToggleAtIndexInArray i arr = 
-    if length arr > i 
-        then take i arr ++ [Toggle] ++ (drop i arr)
-        else arr ++ (take (i - length arr) (repeat Off)) ++ [Toggle]
+        toLights :: Set.Set Light -> [Light]
+        toLights buttonIndex = map (\i -> if Set.member i buttonIndex then 1 else 0) [0..max]
